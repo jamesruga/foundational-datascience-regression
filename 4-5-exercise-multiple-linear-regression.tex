@@ -1,0 +1,904 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Notebook}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{exercise-train-a-multiple-linear-regression-model}{%
+\section{Exercise: Train a multiple linear regression
+model}\label{exercise-train-a-multiple-linear-regression-model}}
+
+In this exercise, we'll train both a simple linear-regression model and
+a multiple linear-regression model and compare their performance using
+R-Squared.
+
+\hypertarget{loading-data}{%
+\subsection{Loading data}\label{loading-data}}
+
+Let's start by having a look at our data.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{pandas}
+\PY{o}{!}pip\PY{+w}{ }install\PY{+w}{ }statsmodels
+\PY{o}{!}wget\PY{+w}{ }https://raw.githubusercontent.com/MicrosoftDocs/mslearn\PYZhy{}introduction\PYZhy{}to\PYZhy{}machine\PYZhy{}learning/main/graphing.py
+\PY{o}{!}wget\PY{+w}{ }https://raw.githubusercontent.com/MicrosoftDocs/mslearn\PYZhy{}introduction\PYZhy{}to\PYZhy{}machine\PYZhy{}learning/main/Data/doggy\PYZhy{}illness.csv
+
+\PY{c+c1}{\PYZsh{}Import the data from the .csv file}
+\PY{n}{dataset} \PY{o}{=} \PY{n}{pandas}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{doggy\PYZhy{}illness.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{delimiter}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}t}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{}Let\PYZsq{}s have a look at the data}
+\PY{n}{dataset}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Requirement already satisfied: statsmodels in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (0.11.0)
+Requirement already satisfied: scipy>=1.0 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from statsmodels)
+(1.5.3)
+Requirement already satisfied: patsy>=0.5 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from statsmodels)
+(0.5.2)
+Requirement already satisfied: numpy>=1.14 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from statsmodels)
+(1.21.6)
+Requirement already satisfied: pandas>=0.21 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from statsmodels)
+(1.1.5)
+Requirement already satisfied: six in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from
+patsy>=0.5->statsmodels) (1.16.0)
+Requirement already satisfied: python-dateutil>=2.7.3 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from
+pandas>=0.21->statsmodels) (2.8.2)
+Requirement already satisfied: pytz>=2017.2 in
+/anaconda/envs/azureml\_py38/lib/python3.8/site-packages (from
+pandas>=0.21->statsmodels) (2022.1)
+--2023-08-23 12:59:22--
+https://raw.githubusercontent.com/MicrosoftDocs/mslearn-introduction-to-machine-
+learning/main/graphing.py
+Resolving raw.githubusercontent.com (raw.githubusercontent.com){\ldots}
+185.199.109.133, 185.199.110.133, 185.199.108.133, {\ldots}
+Connecting to raw.githubusercontent.com
+(raw.githubusercontent.com)|185.199.109.133|:443{\ldots} connected.
+HTTP request sent, awaiting response{\ldots} 200 OK
+Length: 21511 (21K) [text/plain]
+Saving to: ‘graphing.py.1’
+
+graphing.py.1       100\%[===================>]  21.01K  --.-KB/s    in 0s
+
+2023-08-23 12:59:22 (130 MB/s) - ‘graphing.py.1’ saved [21511/21511]
+
+--2023-08-23 12:59:25--
+https://raw.githubusercontent.com/MicrosoftDocs/mslearn-introduction-to-machine-
+learning/main/Data/doggy-illness.csv
+Resolving raw.githubusercontent.com (raw.githubusercontent.com){\ldots}
+185.199.111.133, 185.199.108.133, 185.199.110.133, {\ldots}
+Connecting to raw.githubusercontent.com
+(raw.githubusercontent.com)|185.199.111.133|:443{\ldots} connected.
+HTTP request sent, awaiting response{\ldots} 200 OK
+Length: 3293 (3.2K) [text/plain]
+Saving to: ‘doggy-illness.csv.1’
+
+doggy-illness.csv.1 100\%[===================>]   3.22K  --.-KB/s    in 0s
+
+2023-08-23 12:59:26 (60.3 MB/s) - ‘doggy-illness.csv.1’ saved [3293/3293]
+
+    \end{Verbatim}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+    male  attended\_training  age  body\_fat\_percentage  core\_temperature  \textbackslash{}
+0      0                  1  6.9                   38         38.423169
+1      0                  1  5.4                   32         39.015998
+2      1                  1  5.4                   12         39.148341
+3      1                  0  4.8                   23         39.060049
+4      1                  0  4.8                   15         38.655439
+..   {\ldots}                {\ldots}  {\ldots}                  {\ldots}               {\ldots}
+93     0                  0  4.5                   38         37.939942
+94     1                  0  1.8                   11         38.790426
+95     0                  0  6.6                   20         39.489962
+96     0                  0  6.9                   32         38.575742
+97     1                  1  6.0                   21         39.766447
+
+    ate\_at\_tonys\_steakhouse  needed\_intensive\_care  \textbackslash{}
+0                         0                      0
+1                         0                      0
+2                         0                      0
+3                         0                      0
+4                         0                      0
+..                      {\ldots}                    {\ldots}
+93                        0                      0
+94                        1                      1
+95                        0                      0
+96                        1                      1
+97                        1                      1
+
+    protein\_content\_of\_last\_meal
+0                           7.66
+1                          13.36
+2                          12.90
+3                          13.45
+4                          10.53
+..                           {\ldots}
+93                          7.35
+94                         12.18
+95                         15.84
+96                          9.79
+97                         21.30
+
+[98 rows x 8 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    For this exercise, we'll try to predict \texttt{core\_temperature} from
+some of the other available features.
+
+\hypertarget{data-visualization}{%
+\subsection{Data visualization}\label{data-visualization}}
+
+Let's quickly eyeball which features seem to have some kind of
+relationship with \texttt{core\_temperature}.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{graphing} \PY{c+c1}{\PYZsh{} Custom graphing code that uses Plotly. See our GitHub repository for details}
+
+\PY{n}{graphing}\PY{o}{.}\PY{n}{box\PYZus{}and\PYZus{}whisker}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{box\PYZus{}and\PYZus{}whisker}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{attended\PYZus{}training}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{box\PYZus{}and\PYZus{}whisker}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ate\PYZus{}at\PYZus{}tonys\PYZus{}steakhouse}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{body\PYZus{}fat\PYZus{}percentage}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{protein\PYZus{}content\PYZus{}of\PYZus{}last\PYZus{}meal}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    At a glance, fatter, older, and male dogs seem to more commonly have
+higher temperatures than thinner, younger, or female dogs. Dogs who ate
+a lot of protein last night also seem to be more unwell. The other
+features don't seem particularly useful.
+
+\hypertarget{simple-linear-regression}{%
+\subsection{Simple linear regression}\label{simple-linear-regression}}
+
+Let's try to predict \texttt{core\_temperature} using simple linear
+regression, and note the R-Squared for these relationships.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{statsmodels}\PY{n+nn}{.}\PY{n+nn}{formula}\PY{n+nn}{.}\PY{n+nn}{api} \PY{k}{as} \PY{n+nn}{smf}
+\PY{k+kn}{import} \PY{n+nn}{graphing} \PY{c+c1}{\PYZsh{} custom graphing code. See our GitHub repo for details}
+
+\PY{k}{for} \PY{n}{feature} \PY{o+ow}{in} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{protein\PYZus{}content\PYZus{}of\PYZus{}last\PYZus{}meal}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{body\PYZus{}fat\PYZus{}percentage}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} Perform linear regression. This method takes care of}
+    \PY{c+c1}{\PYZsh{} the entire fitting procedure for us.}
+    \PY{n}{formula} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature \PYZti{} }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n}{feature}
+    \PY{n}{simple\PYZus{}model} \PY{o}{=} \PY{n}{smf}\PY{o}{.}\PY{n}{ols}\PY{p}{(}\PY{n}{formula} \PY{o}{=} \PY{n}{formula}\PY{p}{,} \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{p}{)}
+
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{feature}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{R\PYZhy{}squared:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{simple\PYZus{}model}\PY{o}{.}\PY{n}{rsquared}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Show a graph of the result}
+    \PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{label\PYZus{}x}\PY{o}{=}\PY{n}{feature}\PY{p}{,} 
+                                 \PY{n}{label\PYZus{}y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                 \PY{n}{title} \PY{o}{=} \PY{n}{feature}\PY{p}{,}
+                                 \PY{n}{trendline}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{simple\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{x} \PY{o}{+} \PY{n}{simple\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+                                 \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+male
+R-squared: 0.09990074430719931
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+age
+R-squared: 0.26481160813424653
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+protein\_content\_of\_last\_meal
+R-squared: 0.9155158150005706
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+body\_fat\_percentage
+R-squared: 0.00020809002637733887
+    \end{Verbatim}
+
+    
+    
+    Scrolling through these graphs, we get R-square values of 0.0002
+(\texttt{body\_fat\_percentage}), 0.1 (\texttt{male}), and 0.26
+(\texttt{age}).
+
+While \texttt{protein\_content\_of\_last\_meal} looks very promising
+too, the relationship looks curved, not linear. We'll leave this feature
+for now and come back to it in the next exercise.
+
+    \hypertarget{r-squared}{%
+\subsection{R-Squared}\label{r-squared}}
+
+We've shown the R-Squared value for these models and used it as a
+measure of ``correctness'' for our regression, but what is it?
+
+Intuitively, we can think of R-Squared as ratio for how much better our
+regression line is than a naive regression that just goes straight
+through the mean of all examples.
+
+Roughly, the R-Squared is calculated by taking the loss/error of the
+trained model, and dividing by the loss/error of the naive model. That
+gives a range where \texttt{0} is better and \texttt{1} is worse, so the
+whole thing is subtracted from \texttt{1} to flip those results.
+
+In the following code, we once again show the scatter plot with
+\texttt{age} and \texttt{core\_temperature}, but this time, we show two
+regression lines. The first is the naive line that just goes straight
+through the mean. This has an R-Squared of \texttt{0} (since it's no
+better than itself). An R-Squared of \texttt{1} would be a line that fit
+each training example perfectly. The second plot shows our trained
+regression line, and we once again see its R-Squared.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{formula} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature \PYZti{} age}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{age\PYZus{}trained\PYZus{}model} \PY{o}{=} \PY{n}{smf}\PY{o}{.}\PY{n}{ols}\PY{p}{(}\PY{n}{formula} \PY{o}{=} \PY{n}{formula}\PY{p}{,} \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{p}{)}
+\PY{n}{age\PYZus{}naive\PYZus{}model} \PY{o}{=} \PY{n}{smf}\PY{o}{.}\PY{n}{ols}\PY{p}{(}\PY{n}{formula} \PY{o}{=} \PY{n}{formula}\PY{p}{,} \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{p}{)}
+\PY{n}{age\PYZus{}naive\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{dataset}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{core\PYZus{}temperature}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+\PY{n}{age\PYZus{}naive\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{naive R\PYZhy{}squared:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{age\PYZus{}naive\PYZus{}model}\PY{o}{.}\PY{n}{rsquared}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{trained R\PYZhy{}squared:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{age\PYZus{}trained\PYZus{}model}\PY{o}{.}\PY{n}{rsquared}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Show a graph of the result}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{label\PYZus{}x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} 
+                                \PY{n}{label\PYZus{}y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                \PY{n}{title} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Naive model}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                \PY{n}{trendline}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{dataset}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{core\PYZus{}temperature}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{repeat}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{p}{,} 
+                                \PY{n}{show}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Show a graph of the result}
+\PY{n}{graphing}\PY{o}{.}\PY{n}{scatter\PYZus{}2D}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{label\PYZus{}x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} 
+                                \PY{n}{label\PYZus{}y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                \PY{n}{title} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Trained model}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                \PY{n}{trendline}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{age\PYZus{}trained\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{x} \PY{o}{+} \PY{n}{age\PYZus{}trained\PYZus{}model}\PY{o}{.}\PY{n}{params}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+naive R-squared: 0.0
+trained R-squared: 0.26481160813424653
+    \end{Verbatim}
+
+    
+    
+    
+    
+    \hypertarget{multiple-linear-regression}{%
+\subsection{Multiple Linear
+Regression}\label{multiple-linear-regression}}
+
+Instead of modeling these separately, lets try to combine these into a
+single model. Body fat didn't seem to be useful after all, so let's just
+use \texttt{male} and \texttt{age} as features.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model} \PY{o}{=} \PY{n}{smf}\PY{o}{.}\PY{n}{ols}\PY{p}{(}\PY{n}{formula} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{core\PYZus{}temperature \PYZti{} age + male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{R\PYZhy{}squared:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{model}\PY{o}{.}\PY{n}{rsquared}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+R-squared: 0.31485126997680213
+    \end{Verbatim}
+
+    By using both features at the same time, we got a better result than any
+of the one-feature (univariate) models.
+
+How can we view this, though? Well, a simple linear regression is drawn
+in 2D. If we're working with an extra variable, we add one dimension and
+work in 3D.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{c+c1}{\PYZsh{} Show a graph of the result}
+\PY{c+c1}{\PYZsh{} this needs to be 3D, because we now have three variables in play: two features and one label}
+
+\PY{k}{def} \PY{n+nf}{predict}\PY{p}{(}\PY{n}{age}\PY{p}{,} \PY{n}{male}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{    This converts given age and male values into a prediction from the model}
+\PY{l+s+sd}{    \PYZsq{}\PYZsq{}\PYZsq{}}
+    \PY{c+c1}{\PYZsh{} to make a prediction with statsmodels, we need to provide a dataframe}
+    \PY{c+c1}{\PYZsh{} so create a dataframe with just the age and male variables}
+    \PY{n}{df} \PY{o}{=} \PY{n}{pandas}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n+nb}{dict}\PY{p}{(}\PY{n}{age}\PY{o}{=}\PY{p}{[}\PY{n}{age}\PY{p}{]}\PY{p}{,} \PY{n}{male}\PY{o}{=}\PY{p}{[}\PY{n}{male}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{k}{return} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Create the surface graph}
+\PY{n}{fig} \PY{o}{=} \PY{n}{graphing}\PY{o}{.}\PY{n}{surface}\PY{p}{(}
+    \PY{n}{x\PYZus{}values}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n+nb}{min}\PY{p}{(}\PY{n}{dataset}\PY{o}{.}\PY{n}{age}\PY{p}{)}\PY{p}{,} \PY{n+nb}{max}\PY{p}{(}\PY{n}{dataset}\PY{o}{.}\PY{n}{age}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+    \PY{n}{y\PYZus{}values}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+    \PY{n}{calc\PYZus{}z}\PY{o}{=}\PY{n}{predict}\PY{p}{,}
+    \PY{n}{axis\PYZus{}title\PYZus{}x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{axis\PYZus{}title\PYZus{}y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{axis\PYZus{}title\PYZus{}z}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Core temperature}\PY{l+s+s2}{\PYZdq{}}
+\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add our datapoints to it and display}
+\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}scatter3d}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{n}{dataset}\PY{o}{.}\PY{n}{age}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{n}{dataset}\PY{o}{.}\PY{n}{male}\PY{p}{,} \PY{n}{z}\PY{o}{=}\PY{n}{dataset}\PY{o}{.}\PY{n}{core\PYZus{}temperature}\PY{p}{,} \PY{n}{mode}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{markers}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{fig}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    
+    The preceding graph above interactive. Try rotating it to see how the
+model (shown as a solid plane) would predict core temperature from
+different combinations of age and sex.
+
+\hypertarget{inspecting-our-model}{%
+\subsubsection{Inspecting our model}\label{inspecting-our-model}}
+
+When we have more than two features, it becomes very difficult to
+visualize these models. We usually have to look at the parameters
+directly. Let's do that now. \emph{Statsmodels}, one of the common
+machine learning and statistics libraries, provides a \texttt{summary()}
+method that provides information about our model.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Print summary information}
+\PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<class 'statsmodels.iolib.summary.Summary'>
+"""
+                            OLS Regression Results
+==============================================================================
+Dep. Variable:       core\_temperature   R-squared:                       0.315
+Model:                            OLS   Adj. R-squared:                  0.300
+Method:                 Least Squares   F-statistic:                     21.83
+Date:                Wed, 23 Aug 2023   Prob (F-statistic):           1.58e-08
+Time:                        13:07:17   Log-Likelihood:                -85.295
+No. Observations:                  98   AIC:                             176.6
+Df Residuals:                      95   BIC:                             184.3
+Df Model:                           2
+Covariance Type:            nonrobust
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept     37.9793      0.135    282.094      0.000      37.712      38.247
+age            0.1406      0.026      5.459      0.000       0.089       0.192
+male           0.3182      0.121      2.634      0.010       0.078       0.558
+==============================================================================
+Omnibus:                       21.610   Durbin-Watson:                   2.369
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):                5.227
+Skew:                           0.121   Prob(JB):                       0.0733
+Kurtosis:                       1.895   Cond. No.                         12.9
+==============================================================================
+
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly
+specified.
+"""
+\end{Verbatim}
+\end{tcolorbox}
+        
+    If we look at the top right-hand corner, we can see our R-squared
+statistic that we printed out earlier.
+
+Slightly down and to the left, we can also see information about the
+data we trained our model on. For example, we can see that we trained it
+on 98 observations (\texttt{No.\ Observations}).
+
+Under this, we find information about our parameters in a column called
+\texttt{coef} (which stands for \emph{coefficients}, a synonym for
+parameters in machine learning). Here, we can see the intercept was
+about \texttt{38}, meaning that the model predicts a core temperature of
+38 for a dog with \texttt{age=0} and \texttt{male=0}. Underneath this,
+we see the parameter for age is 0.14, meaning that for each additional
+year of age, the predicted temperature would rise 0.14 degrees celsius.
+For \texttt{male}, we can see a parameter of 0.32, meaning that the
+model estimates all dogs (that is, where \texttt{male\ ==\ 1}) to have
+temperatures 0.32 degrees celsius higher than female dogs (where
+\texttt{male\ ==\ 0}).
+
+Although we don't have space here to go into detail, the \texttt{P}
+column is also very useful. This tells us how confident the model is
+about this parameter value. As a rule of thumb, if the \emph{p-value} is
+less than 0.05, there is a good chance that this relationship if
+trustable. For example, here both \texttt{age} and \texttt{male} are
+less than 0.05, so we should feel confident using this model in the real
+world.
+
+As a final exercise, let's do the same thing with our earlier simple
+linear-regression model, relating \texttt{age} to
+\texttt{core\_temperature}. Read through the following table and see
+what you can make out from this model.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{age\PYZus{}trained\PYZus{}model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<class 'statsmodels.iolib.summary.Summary'>
+"""
+                            OLS Regression Results
+==============================================================================
+Dep. Variable:       core\_temperature   R-squared:                       0.265
+Model:                            OLS   Adj. R-squared:                  0.257
+Method:                 Least Squares   F-statistic:                     34.58
+Date:                Wed, 23 Aug 2023   Prob (F-statistic):           5.94e-08
+Time:                        13:13:59   Log-Likelihood:                -88.749
+No. Observations:                  98   AIC:                             181.5
+Df Residuals:                      96   BIC:                             186.7
+Df Model:                           1
+Covariance Type:            nonrobust
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept     38.0879      0.132    288.373      0.000      37.826      38.350
+age            0.1533      0.026      5.880      0.000       0.102       0.205
+==============================================================================
+Omnibus:                       43.487   Durbin-Watson:                   2.492
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):                6.605
+Skew:                           0.087   Prob(JB):                       0.0368
+Kurtosis:                       1.740   Cond. No.                         11.3
+==============================================================================
+
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly
+specified.
+"""
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{summary}{%
+\subsection{Summary}\label{summary}}
+
+We covered the following concepts in this exercise:
+
+\begin{itemize}
+\tightlist
+\item
+  Built simple and multiple linear-regression models.
+\item
+  Compared the performance of both models by looking at R-Squared
+  values.
+\item
+  Inspected models to understand how they work.
+\end{itemize}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
